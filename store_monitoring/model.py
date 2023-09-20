@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, TIMESTAMP, TIME, BigInteger
+from sqlalchemy import Column, Integer, String, TIMESTAMP, BigInteger
 from database import Base
 
 class StoreStatus(Base):
@@ -9,23 +9,32 @@ class StoreStatus(Base):
     timestamp_utc=Column(TIMESTAMP)
     status=Column(String)
 
-    class StoreStatus:
-        def __init__(self, store_id, status, timestamp_utc):
-            self.store_id = store_id
-            self.status = status
-            self.timestamp_utc = timestamp_utc
+    def __init__(self, store_id, status, timestamp_utc):
+        self.store_id = store_id
+        self.status = status
+        self.timestamp_utc = timestamp_utc
 
-class StoreHours(Base):
-    __tablename__="store_hours"
+class MenuHours(Base):
+    __tablename__="menu_hours"
 
     id=Column(Integer, primary_key=True, autoincrement=True)
-    store_id=Column(Integer)
-    dayofweek=Column(Integer)
-    start_time_local=Column(TIME)
-    end_time_local=Column(TIME)
+    store_id=Column(BigInteger)
+    day=Column(Integer)
+    start_time_local=Column(String)
+    end_time_local=Column(String)
 
-class StoreTimeZone(Base):
-    __tablename__="store_timezone"
+    def __inti__(self, store_id, day, start_time_local, end_time_local):
+        self.store_id=store_id
+        self.day=day
+        self.start_time_local=start_time_local
+        self.end_time_local=end_time_local
 
-    store_id=Column(Integer, primary_key=True)
-    timezone_str=Column(String)                                                                                                                                                            
+class BqResults(Base):
+    __tablename__="bq_results"
+
+    store_id=Column(BigInteger, primary_key=True)
+    timezone_str=Column(String)       
+
+    def __init__(self, store_id, timezone_str):
+        self.store_id=store_id
+        self.timezone_str=timezone_str                                                                                                                                                     
