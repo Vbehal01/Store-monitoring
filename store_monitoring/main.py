@@ -35,14 +35,19 @@ def get_db():
 #     background_tasks.add_task(crud.insert_menu_hours, db)
 #     return {"message": "Menu hours insertion request received and enqueued for background execution"}
 
-# @app.get("/business_hours/")
-# def business_hours(db:Session=Depends(get_db)):
-#     return crud.unique_store_id(db)
+@app.get("/business_hours/")
+def business_hours(db:Session=Depends(get_db)):
+    return crud.intersection(db)
+
+def insert_data(db):
+    crud.insert_store_status(db)
+    crud.insert_menu_hours(db)
+    crud.insert_bq_results(db)
+
+    return
 
 @app.post("/trigger_report/")
 async def trigger_report(background_tasks: BackgroundTasks, db:Session=Depends(get_db)):
-    background_tasks.add_task(crud.insert_store_status(db))
-    background_tasks.add_task(crud.insert_menu_hours(db))
-    background_tasks.add_task(crud.insert_bq_results(db))
+    background_tasks.add_task(insert_data(db))
 
     return

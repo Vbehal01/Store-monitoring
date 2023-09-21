@@ -2,6 +2,7 @@ import model
 import csv
 from constants import BQ_RESULTS_FILE_PATH, MENU_HOURS_FILE_PATH, STORE_STATUS_FILE_PATH
 from datetime import datetime, timedelta
+from sqlalchemy import and_
 
 
 def insert_store_status(db):
@@ -18,13 +19,14 @@ def insert_store_status(db):
     return
 
 def string_to_time(time):
+    print("input_time: ",time)
+    print(type(time))
     if(len(time)>7):
-        time=datetime.strftime("time", "%H:%M:%S")
+        time=datetime.strptime(time.replace(".",":"), "%H:%M:%S")
     else:
         time="0"+time
         time = datetime.strptime(time.replace(".",":"), "%H:%M:%S")
-    return (time.strftime("%H:%M:%S"))
-
+    return (time.time())
 
 def insert_menu_hours(db):
     with open (MENU_HOURS_FILE_PATH, mode='r', encoding='utf-8-sig') as file:
@@ -52,14 +54,25 @@ def insert_bq_results(db):
             db.refresh(data)
     return
 
-def time():
+def current_time():
     current_time=datetime.now()
     one_hour_ago=current_time - timedelta(minutes=60)
-    time_range={"current_time": current_time.strftime("%H:%M:%S"), "one_hour_ago": one_hour_ago.strftime("%H:%M:%S")}
+    time_range={"current_time": current_time, "one_hour_ago": one_hour_ago}
     return time_range
 
 def get_business_hour(db):
-    return db.query(model.MenuHours).filter(and_(model.MenuHours.store_id==579100056021594000),(model.MenuHours.day==0)).all()
+    data= db.query(model.MenuHours).filter(and_(model.MenuHours.store_id==579100056021594000),(model.MenuHours.day==0)).all()
+    return data
 
-# data=time()
-# print(data)
+def intersection(db):
+    business_hour=get_business_hour(db)
+    time=current_time()
+    for i in business_hour:
+        print(type(i.start_time_local))
+        print(type(i.end_time_local))
+        start_time=string_to_time(i.start_time_local)
+        end_time=string_to_time(i.end_time_local)
+        if((time["current_time"].time() <= start_time) and time["one_hour_ago"].time()>=end_time):
+            print("YES")
+        else:
+            print("no")
