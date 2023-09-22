@@ -1,5 +1,5 @@
-STORE_STATUS_FILE_PATH="/workspaces/Store-monitoring/csv files/store_status.csv"
-MENU_HOURS_FILE_PATH="/workspaces/Store-monitoring/csv files/Menu hours.csv"
-BQ_RESULTS_FILE_PATH="/workspaces/Store-monitoring/csv files/Bq results.csv"
-
+STORE_TIMEZONE_FILE_PATH="/workspaces/Store-monitoring/csv_data/store_timezone.csv"
+STORE_BUSINESS_HOURS_FILE_PATH="/workspaces/Store-monitoring/csv_data/store_timezone.csv"
+STORE_STATUS_FILE_PATH="/workspaces/Store-monitoring/csv_data/store_timezone.csv"
+DEFAULT_TIMEZONE = "America/Chicago"
 DB_ENDPOINT = "postgresql://postgres:postgres@localhost:5432/postgres_db"
