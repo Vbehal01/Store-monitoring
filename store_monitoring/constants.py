@@ -2,4 +2,5 @@ STORE_TIMEZONE_FILE_PATH="/workspaces/Store-monitoring/csv_data/store_timezone.c
 STORE_BUSINESS_HOURS_FILE_PATH="/workspaces/Store-monitoring/csv_data/store_timezone.csv"
 STORE_STATUS_FILE_PATH="/workspaces/Store-monitoring/csv_data/store_timezone.csv"
 DEFAULT_TIMEZONE = "America/Chicago"
+REPORT_DIR_PATH = "/workspaces/Store-monitoring/output_data"
 DB_ENDPOINT = "postgresql://postgres:postgres@localhost:5432/postgres_db"
