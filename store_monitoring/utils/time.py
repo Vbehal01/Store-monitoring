@@ -25,5 +25,5 @@ def last_hour_time_interval():
     return time_range
 
 def string_to_time(string_time):
-    string_time=datetime.strftime(string_time, "%H:%M:%S")
+    string_time=datetime.strptime(string_time, "%H:%M:%S")
     return(string_time.time())

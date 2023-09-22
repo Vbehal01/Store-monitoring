@@ -5,8 +5,6 @@ from sqlalchemy import and_
 from utils.time import business_hour_string_to_time, last_hour_time_interval, string_to_time
 from utils.math import get_intersection_of_intervals
 
-unique_store_id={}
-
 def insert_store_status_update(db):
     with open (STORE_STATUS_FILE_PATH, mode='r', encoding='utf-8-sig') as file:
         file_content=csv.DictReader(file)
@@ -14,13 +12,25 @@ def insert_store_status_update(db):
             store_id=row["store_id"]
             status=row["status"]
             timestamp_utc=row["timestamp_utc"]
-            unique_store_id[f"{store_id}"]=1
             data=model.StoreStatusUpdates(store_id=store_id, status=status, timestamp_utc=timestamp_utc)
             db.add(data)
             db.commit()
             db.refresh(data)
+            unique_store_id_business_hours=db.query(model.StoreBusinessHours).filter(model.StoreBusinessHours.store_id==store_id).first()
+            if unique_store_id_business_hours is None:
+                for day in range(0,7):
+                    business_hour_data=model.StoreBusinessHours(store_id=store_id, day=day, start_time_local=string_to_time("00:00:00"), end_time_local=string_to_time("23:59:59"))
+                    db.add(business_hour_data)
+                    db.commit()
+                    db.refresh(business_hour_data)
+            unique_store_id_store_timezone=db.query(model.StoreTimezone).filter(model.StoreTimezone.store_id==store_id).first()
+            if unique_store_id_store_timezone is None:
+                data=model.StoreTimezone(store_id=store_id, timezone_str="America/Chicago")
+                db.add(data)
+                db.commit()
+                db.refresh(data)   
     return
-print(unique_store_id)
+
 def find_storeid_timezone(db, store_id):
     data=db.query(model.StoreTimezone).filter(model.StoreTimezone.store_id==store_id).first()
     return data.timezone_str
@@ -31,7 +41,7 @@ def insert_store_business_hour(db):
         for row in file_content:
             store_id=row["store_id"]
             day=row["day"]
-            timezone={"Asia/Beirut": "+3", "America/Boise": "-7", "America/Denver": "-7", "America/Chicago": "-6", "America/New_York": "-4"}
+            timezone={"Asia/Beirut": "+3", "America/Boise": "-7", "America/Denver": "-7", "America/Chicago": "-6", "America/New_York": "-5", "America/Los_Angeles": "-8"}
             zone=find_storeid_timezone(db, store_id)
             start_time_local=business_hour_string_to_time(row["start_time_local"],timezone[zone])
             end_time_local=business_hour_string_to_time(row["end_time_local"],timezone[zone])
@@ -39,37 +49,20 @@ def insert_store_business_hour(db):
             db.add(data)
             db.commit()
             db.refresh(data)
-        for row in file_content:
-            store_id=row["store_id"]
-            if store_id in unique_store_id:
-                continue
-            else:
-                for i in range(0,7):
-                    data=model.StoreBusinessHours(store_id=store_id, day=i, start_time_local=string_to_time("00:00:00"), end_time_local=string_to_time("23:59:59"))
-                    db.add(data)
-                    db.commit()
-                    db.refresh(data)
     return
 
 def insert_store_time_zone(db):
     with open (STORE_TIMEZONE_FILE_PATH, mode='r', encoding='utf-8-sig') as file:
         file_content=csv.DictReader(file)
+        unique_store_id={}
         for row in file_content:
             store_id=row["store_id"]
             timezone_str=row["timezone_str"]
+            unique_store_id[f"{store_id}"]=1
             data=model.StoreTimezone(store_id=store_id, timezone_str=timezone_str)
             db.add(data)
             db.commit()
             db.refresh(data)
-        for row in file_content:
-            store_id=row["store_id"]
-            if store_id in unique_store_id:
-                continue
-            else:
-                data=model.StoreTimezone(store_id=store_id, timezone_str="America/Chicago")
-                db.add(data)
-                db.commit()
-                db.refresh(data)
     return
 
 def get_business_hour(db):

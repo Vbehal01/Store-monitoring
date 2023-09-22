@@ -40,9 +40,9 @@ def business_hours(db:Session=Depends(get_db)):
     return crud.query(db)
 
 def insert_data(db):
-    crud.insert_store_status_update(db)
     crud.insert_store_time_zone(db)
     crud.insert_store_business_hour(db)
+    crud.insert_store_status_update(db)
 
 @app.post("/trigger_report/")
 async def trigger_report(background_tasks: BackgroundTasks, db:Session=Depends(get_db)):
