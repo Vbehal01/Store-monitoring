@@ -19,8 +19,6 @@ def insert_store_status(db):
     return
 
 def string_to_time(time):
-    print("input_time: ",time)
-    print(type(time))
     if(len(time)>7):
         time=datetime.strptime(time.replace(".",":"), "%H:%M:%S")
     else:
@@ -64,15 +62,29 @@ def get_business_hour(db):
     data= db.query(model.MenuHours).filter(and_(model.MenuHours.store_id==579100056021594000),(model.MenuHours.day==0)).all()
     return data
 
-def intersection(db):
+def intersection(intervals):
+    start, end = intervals.pop()
+    while intervals:
+        start_temp, end_temp = intervals.pop()
+        start = max(start, start_temp)
+        end = min(end, end_temp)
+    return [start, end]
+
+def query(db):
     business_hour=get_business_hour(db)
     time=current_time()
     for i in business_hour:
-        print(type(i.start_time_local))
-        print(type(i.end_time_local))
         start_time=string_to_time(i.start_time_local)
         end_time=string_to_time(i.end_time_local)
-        if((time["current_time"].time() <= start_time) and time["one_hour_ago"].time()>=end_time):
-            print("YES")
+        intervals=[[time["one_hour_ago"].time(), time["current_time"].time()], [start_time, end_time]]
+        if((start_time<time["one_hour_ago"].time()) and (end_time<time["one_hour_ago"].time())):
+            data="NO"
+        elif((start_time<time["one_hour_ago"].time()) and (end_time==time["one_hour_ago"].time())):
+            data="no"
+        elif((start_time<=time["one_hour_ago"].time()) and (end_time<=time["current_time"].time())):
+            data=intersection(intervals)
+        elif(((start_time>=time["one_hour_ago"].time()) and (start_time<time["current_time"].time())) and (end_time>time["current_time"].time())):
+            data=intersection(intervals)
         else:
-            print("no")
+            data="no"
+    return {"message": data}

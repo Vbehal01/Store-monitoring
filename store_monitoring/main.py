@@ -37,7 +37,7 @@ def get_db():
 
 @app.get("/business_hours/")
 def business_hours(db:Session=Depends(get_db)):
-    return crud.intersection(db)
+    return crud.query(db)
 
 def insert_data(db):
     crud.insert_store_status(db)
