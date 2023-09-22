@@ -2,8 +2,8 @@ from sqlalchemy import Column, Integer, String, TIMESTAMP, BigInteger
 from database import Base
 from datetime import datetime
 
-class StoreStatus(Base):
-    __tablename__="store_status"
+class StoreStatusUpdates(Base):
+    __tablename__="store_status_updates"
 
     id=Column(Integer, primary_key=True, autoincrement=True)
     store_id=Column(BigInteger)
@@ -15,8 +15,8 @@ class StoreStatus(Base):
         self.status = status
         self.timestamp_utc = timestamp_utc
 
-class MenuHours(Base):
-    __tablename__ = "menu_hours"
+class StoreBusinessHours(Base):
+    __tablename__ = "store_business_hours"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     store_id = Column(BigInteger)
@@ -30,8 +30,8 @@ class MenuHours(Base):
         self.start_time_local = start_time_local
         self.end_time_local = end_time_local
 
-class BqResults(Base):
-    __tablename__="bq_results"
+class StoreTimezone(Base):
+    __tablename__="store_time_zone"
 
     store_id=Column(BigInteger, primary_key=True)
     timezone_str=Column(String)       
