@@ -10,3 +10,7 @@ A project to create backend APIs that facilitate the monitoring of restaurant on
 2. Launch a new terminal and type ```bash setup.h```. This will create a virtual environment, activate it, and then install the required packages from the requirements.txt file.
 3. Open a new terminal and type ```docker-compose up``` this will launch the container where the postgreql service is available, eliminating the need to install postgresql on your system.
 4. Return to the previous terminal and type ```uvicorn main:app --reload```. This will run the fastapi server at port 8000 and allow you to make API calls using any API testing tool such as postman, thunder client, and so on.
+
+## Commands
+- uvicorn store_monitoring.main:app --reload
+- docker-compose up
